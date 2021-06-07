@@ -16,18 +16,7 @@ def get_html():
         print()
 
     flights = fr.get_flights(airline_id)
-    html ='''<!DOCTYPE html>
-    <html>'''
-    
-    html+='''<form action="http://127.0.0.1:5000">
-  <label for="airline">Airline ID:</label><br>
-  <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
-  <label for="number">Flight Num:</label><br>
-  <input type="text" id="number" name="number" value='''+flight_number+'''><br><br>
-  <input type="submit" value="Submit">
-</form> 
-
-'''
+    html = ''
     if airline_id!='default' and airline_id!='':
         try:
             flight = []
@@ -44,6 +33,18 @@ def get_html():
                 if 'medium' in plane['images'] and len(plane['images']['medium'])>0 and plane['registration']==flight[9]:
                     image = plane['images']['medium'][0]['src']
             print(image)
+            html +='''<!DOCTYPE html>
+    <html><body style="background-image:url('''+image+''');">'''
+    
+            html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action="http://127.0.0.1:5000">
+  <label for="airline">Airline ID:</label><br>
+  <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
+  <label for="number">Flight Num:</label><br>
+  <input type="text" id="number" name="number" value='''+flight_number+'''><br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+'''
             html+='<p>'
             html+='Altitude:' + str(flight[4])
             html+='</p> <p>'
@@ -60,8 +61,7 @@ def get_html():
             html+='Origin:' + str(flight[11])
             html+='</p> <p>'
             html+='Destination:' + str(flight[12])
-            html+='</p>'
-            html+='<img src="'+image+'" alt="plane" width="500" height="300">'
+            html+='</p></div>'
         except:
             html ='''<!DOCTYPE html>
             <html>'''
@@ -73,7 +73,21 @@ def get_html():
   <input type="submit" value="Submit">
 </form> 
 '''
-            html+='<p>This flight is not active </p></html>'
+            html+='<p>This flight is not active </p>'
+    else:
+        html +='''<!DOCTYPE html>
+    <html><body>'''
+    
+        html+='''<form action="http://127.0.0.1:5000">
+  <label for="airline">Airline ID:</label><br>
+  <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
+  <label for="number">Flight Num:</label><br>
+  <input type="text" id="number" name="number" value='''+flight_number+'''><br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+'''
+    html+='</body></html>'
     
     return html
   
