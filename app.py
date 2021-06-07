@@ -9,12 +9,12 @@ def get_html():
     airline_id='default'
     flight_number = '1'
     try:
-        airline_id  = full_path.split('airline=')[1].split('&')[0]
+        airline_id  = full_path.split('airline=')[1].split('&')[0].upper()
+        print(airline_id)
         flight_number  = full_path.split('number=')[1]
     except:
         print()
-    print(airline_id)
-    print(flight_number)
+
     flights = fr.get_flights(airline_id)
     html ='''<!DOCTYPE html>
     <html>'''
@@ -37,6 +37,13 @@ def get_html():
                     if info[-3][3:]==str(flight_number):
                         flight = info
                         break
+            other_id = flight[13]
+            print(flight)
+            image = ''
+            for plane in fr.get_flight(other_id)['result']['response']['aircraftImages']:
+                if 'medium' in plane['images'] and len(plane['images']['medium'])>0 and plane['registration']==flight[9]:
+                    image = plane['images']['medium'][0]['src']
+            print(image)
             html+='<p>'
             html+='Altitude:' + str(flight[4])
             html+='</p> <p>'
@@ -54,6 +61,7 @@ def get_html():
             html+='</p> <p>'
             html+='Destination:' + str(flight[12])
             html+='</p>'
+            html+='<img src="'+image+'" alt="plane" width="500" height="300">'
         except:
             html ='''<!DOCTYPE html>
             <html>'''
