@@ -79,7 +79,7 @@ def get_html():
     <html><body>'''
     
         html+='''
-        <div style="background-color:#999;width:500px;padding:20px;border-radius:10px">
+        <div style="background-color:#CCC;width:500px;padding:20px;border-radius:10px">
         <form action="http://127.0.0.1:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
