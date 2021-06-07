@@ -6,8 +6,8 @@ app = Flask(__name__)
 def get_html():
     fr = flightradar24.Api()
     full_path = request.full_path
-    airline_id='default'
-    flight_number = '1'
+    airline_id=''
+    flight_number = ''
     try:
         airline_id  = full_path.split('airline=')[1].split('&')[0].upper()
         print(airline_id)
@@ -17,7 +17,7 @@ def get_html():
 
     flights = fr.get_flights(airline_id)
     html = ''
-    if airline_id!='default' and airline_id!='':
+    if airline_id!='':
         try:
             flight = []
             for key in flights:
@@ -78,13 +78,16 @@ def get_html():
         html +='''<!DOCTYPE html>
     <html><body>'''
     
-        html+='''<form action="http://127.0.0.1:5000">
+        html+='''
+        <div style="background-color:#999;width:500px;padding:20px;border-radius:10px">
+        <form action="http://127.0.0.1:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
   <label for="number">Flight Num:</label><br>
   <input type="text" id="number" name="number" value='''+flight_number+'''><br><br>
   <input type="submit" value="Submit">
 </form> 
+</div>
 
 '''
     html+='</body></html>'
