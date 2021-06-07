@@ -55,13 +55,16 @@ def get_html():
                         break
             other_id = flight[13]
             image = ''
+            im_size = 'large'
             for plane in fr.get_flight(other_id)['result']['response']['aircraftImages']:
-                if 'medium' in plane['images'] and len(plane['images']['medium'])>0:
-                    image = plane['images']['medium'][0]['src']
+                for key in plane['images']:
+                    print(key)
+                if im_size in plane['images'] and len(plane['images'][im_size])>0:
+                    image = plane['images'][im_size][0]['src']
                     if plane['registration']==flight[9]:
                         break
             html +='''<!DOCTYPE html>
-    <html><body style="background-image:url('''+image+''');">'''
+    <html><body style="background-image:url('''+image+''');background-size: cover;">'''
     
             html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action="http://127.0.0.1:5000">
   <label for="airline">Airline ID:</label><br>
