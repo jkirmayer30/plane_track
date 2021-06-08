@@ -22,16 +22,21 @@ def get_html():
         try:
             flight = {}
             eta = 0
+            status = ''
             id = airline_id+flight_number
             flight_data = fr.get_flight(id)
             for idx in range(len(flight_data['result']['response']['data'])):
                 gmt_eta = flight_data['result']['response']['data'][idx]['time']['estimated']['arrival']
                 if gmt_eta!=None:
-                    time = gmt_eta+14400+flight_data['result']['response']['data'][idx]['airport']['destination']['timezone']['offset']
-                    eta = datetime.datetime.fromtimestamp(time).strftime('%m/%d/%Y at %H:%M:%S')
                     flight = flight_data['result']['response']['data'][idx]
+                    time = gmt_eta+14400+flight['airport']['destination']['timezone']['offset']
+                    if flight['status']['icon']=='green':
+                        status = 'On Time'
+                    else:
+                        status = 'Delayed'
+                    print(status)
+                    eta = datetime.datetime.fromtimestamp(time).strftime('%m/%d/%Y at %H:%M:%S')
                     break
-            tail_num = flight['aircraft']['registration']
             plane_type = flight['aircraft']['model']['text']
             org = flight['airport']['origin']['name']+', '+ flight['airport']['origin']['position']['country']['name']
             dst = flight['airport']['destination']['name']+', '+ flight['airport']['destination']['position']['country']['name']
@@ -72,6 +77,8 @@ def get_html():
             html+='Destination: ' + dst
             html+='</p> <p>'
             html+='ETA:' + eta
+            html+='</p> <p>'
+            html+='Status:' + status
             html+='</p></div>'
         except:
             html ='''<!DOCTYPE html>
