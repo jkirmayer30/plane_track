@@ -9,6 +9,7 @@ def get_html():
     full_path = request.full_path
     airline_id=''
     flight_number = ''
+    delay = 0
     try:
         airline_id  = full_path.split('airline=')[1].split('&')[0].upper()
         
@@ -23,6 +24,7 @@ def get_html():
             flight = {}
             eta = 0
             status = ''
+            icon = ''
             id = airline_id+flight_number
             flight_data = fr.get_flight(id)
             for idx in range(len(flight_data['result']['response']['data'])):
@@ -30,11 +32,23 @@ def get_html():
                 if gmt_eta!=None:
                     flight = flight_data['result']['response']['data'][idx]
                     time = gmt_eta+14400+flight['airport']['destination']['timezone']['offset']
-                    if flight['status']['icon']=='green':
+                    icon = flight['status']['icon']
+                    delay  = (flight['time']['estimated']['arrival']-flight['time']['scheduled']['arrival'])//60
+                    print(delay)
+                    if delay<10:
                         status = 'On Time'
+                        if delay<-10:
+                            status= str(-delay)+' minutes early'
+                        icon = 'green'
+                    elif delay<60:
+                        status = 'Moderately Delayed ('+ str(delay)+' minutes late)'
+                        icon = 'orange'
                     else:
-                        status = 'Delayed'
-                    print(status)
+                        if delay>=120:
+                            status = 'Severely Delayed ( '+str(delay//60)+' hours ' + str(delay%60)+' minutes late)'
+                        else:
+                            status = 'Severely Delayed ( 1 hour ' + str(delay%60)+' minutes late)'
+                        icon = 'red'
                     eta = datetime.datetime.fromtimestamp(time).strftime('%m/%d/%Y at %H:%M:%S')
                     break
             plane_type = flight['aircraft']['model']['text']
@@ -51,7 +65,7 @@ def get_html():
             html +='''<!DOCTYPE html>
     <html><body style="background-image:url('''+image+''');background-size: cover;">'''
     
-            html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action="http://127.0.0.1:5000">
+            html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action="http://moe.stuy.edu/~jkirmayer30:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
   <label for="number">Flight Number:</label><br>
@@ -76,14 +90,14 @@ def get_html():
             html+='</p> <p>'
             html+='Destination: ' + dst
             html+='</p> <p>'
-            html+='ETA:' + eta
+            html+='ETA: ' + eta
             html+='</p> <p>'
-            html+='Status:' + status
-            html+='</p></div>'
+            html+='Status: <span style="color:'+icon+';">' + status
+            html+='</span></p></div>'
         except:
             html ='''<!DOCTYPE html>
             <html>'''
-            html+='''<form action="http://127.0.0.1:5000">
+            html+='''<form action="http://moe.stuy.edu/~jkirmayer30:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline"><br>
   <label for="number">Flight Number:</label><br>
@@ -98,7 +112,7 @@ def get_html():
     
         html+='''
         <div style="background-color:#CCC;width:500px;padding:20px;border-radius:10px">
-        <form action="http://127.0.0.1:5000">
+        <form action="http://moe.stuy.edu/~jkirmayer30:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
   <label for="number">Flight Number:</label><br>
@@ -112,4 +126,4 @@ def get_html():
     return html
   
 if __name__ == '__main__':
-   app.run(port=5000)
+   app.run(port=5000,host='http://moe.stuy.edu/~jkirmayer30')
