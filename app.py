@@ -1,40 +1,14 @@
 from flask import Flask,request
 import flightradar24
+import datetime
 app = Flask(__name__)
-pop_file = open("planes.txt")
-text = pop_file.read()
 
-def get_data(s):
-    data = []
-    string = s[s.find('\n'):]
-    new = string.split('\n')
-    for x in new :
-        if x != '' :
-            data.append(x.split(','))
-    return data
-plane_types = get_data(text)
 @app.route('/',methods=['GET', 'POST'])
 def get_html():
     fr = flightradar24.Api()
     full_path = request.full_path
     airline_id=''
     flight_number = ''
-    def airport_name(n) :
-        airports = fr.get_airports()['rows']
-        for x in airports :
-            if x['iata'] == n :
-                return x['name'] + ', ' + x['country']
-    def airplane_type (n) :
-        print(n)
-        def unquote (m) :
-            return m.split('"')[1]
-        for x in plane_types :
-            if '"' in x[2] and unquote(x[2]) == n :
-                print(x[2])
-                return unquote(x[0])
-           
-            
-        
     try:
         airline_id  = full_path.split('airline=')[1].split('&')[0].upper()
         
@@ -46,19 +20,25 @@ def get_html():
     html = ''
     if airline_id!='':
         try:
-            flight = []
-            for key in flights:
-                info = flights[key]
-                if type(info)==list:
-                    if info[-3][3:]==str(flight_number):
-                        flight = info
-                        break
-            other_id = flight[13]
+            flight = {}
+            eta = 0
+            id = airline_id+flight_number
+            flight_data = fr.get_flight(id)
+            for idx in range(len(flight_data['result']['response']['data'])):
+                gmt_eta = flight_data['result']['response']['data'][idx]['time']['estimated']['arrival']
+                if gmt_eta!=None:
+                    time = gmt_eta+14400+flight_data['result']['response']['data'][idx]['airport']['destination']['timezone']['offset']
+                    eta = datetime.datetime.fromtimestamp(time).strftime('%m/%d/%Y at %H:%M:%S')
+                    flight = flight_data['result']['response']['data'][idx]
+                    break
+            tail_num = flight['aircraft']['registration']
+            plane_type = flight['aircraft']['model']['text']
+            org = flight['airport']['origin']['name']+', '+ flight['airport']['origin']['position']['country']['name']
+            dst = flight['airport']['origin']['name']+', '+ flight['airport']['origin']['position']['country']['name']
+            flight = fr.get_flights(flight['airline']['code']['icao'])[flight['identification']['id']]
             image = ''
             im_size = 'large'
-            for plane in fr.get_flight(other_id)['result']['response']['aircraftImages']:
-                for key in plane['images']:
-                    print(key)
+            for plane in flight_data['result']['response']['aircraftImages']:
                 if im_size in plane['images'] and len(plane['images'][im_size])>0:
                     image = plane['images'][im_size][0]['src']
                     if plane['registration']==flight[9]:
@@ -81,15 +61,17 @@ def get_html():
             html+='</p> <p>'
             html+='Heading: ' + str(flight[3]) + ' degrees'
             html+='</p> <p>'
-            html+='Aircraft: ' + airplane_type(str(flight[8]))
+            html+='Aircraft: ' + plane_type
             html+='</p> <p>'
             html+='Latitude: ' + str(flight[1])
             html+='</p> <p>'
             html+='Longitude: ' + str(flight[2])
             html+='</p> <p>'
-            html+='Origin: ' + str(flight[11]) + ', ' + str(airport_name(flight[11]))
+            html+='Origin: ' + org
             html+='</p> <p>'
-            html+='Destination: ' + str(flight[12]) + ', ' + str(airport_name(flight[12]))
+            html+='Destination: ' + dst
+            html+='</p> <p>'
+            html+='ETA:' + eta
             html+='</p></div>'
         except:
             html ='''<!DOCTYPE html>
