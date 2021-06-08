@@ -34,7 +34,7 @@ def get_html():
             tail_num = flight['aircraft']['registration']
             plane_type = flight['aircraft']['model']['text']
             org = flight['airport']['origin']['name']+', '+ flight['airport']['origin']['position']['country']['name']
-            dst = flight['airport']['origin']['name']+', '+ flight['airport']['origin']['position']['country']['name']
+            dst = flight['airport']['destination']['name']+', '+ flight['airport']['destination']['position']['country']['name']
             flight = fr.get_flights(flight['airline']['code']['icao'])[flight['identification']['id']]
             image = ''
             im_size = 'large'
