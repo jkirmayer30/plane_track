@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/home/students/2023/jkirmayer30/public_html/project/bin/python
 import flightradar24
 import datetime
 import cgi
@@ -87,7 +87,7 @@ def get_html(airline_id,flight_number):
             html+='</span></p></div>'
         except:
             html ='''<!DOCTYPE html>
-            <html>'''
+            <html><body>'''
             html+='''<form action="http://127.0.0.1:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline"><br>
