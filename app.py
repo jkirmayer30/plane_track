@@ -10,7 +10,7 @@ def get_html(airline_id,flight_number):
     fr = flightradar24.Api()
     delay = 0
     html = ''
-    if airline_id!='':
+    if airline_id!=None:
         try:
             flight = {}
             eta = 0
