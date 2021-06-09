@@ -54,7 +54,7 @@ def get_html(airline_id,flight_number):
                     if plane['registration']==flight[9]:
                         break
             html +='''<!DOCTYPE html>
-    <html><body style="background-image:url('''+image+''');background-size: cover;">'''
+    <html><body style="background-size: cover;">'''
     
             html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action=""http://moe.stuy.edu/~jkirmayer30:5000"">
   <label for="airline">Airline ID:</label><br>
