@@ -1,8 +1,8 @@
-#!usr/bin/python
+#!/usr/bin/python
 import flightradar24
 import datetime
 import cgi
-formData = cgi.FieldStorage
+formData = cgi.FieldStorage()
 airline = formData.getvalue('airline')
 number = formData.getvalue('number')
 
