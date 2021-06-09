@@ -1,23 +1,14 @@
-from flask import Flask,request
+#!usr/bin/python
 import flightradar24
 import datetime
-app = Flask(__name__)
+import cgi
+formData = cgi.FieldStorage
+airline = formData.getvalue('airline')
+number = formData.getvalue('number')
 
-@app.route('/',methods=['GET', 'POST'])
-def get_html():
+def get_html(airline_id,flight_number):
     fr = flightradar24.Api()
-    full_path = request.full_path
-    airline_id=''
-    flight_number = ''
     delay = 0
-    try:
-        airline_id  = full_path.split('airline=')[1].split('&')[0].upper()
-        
-        flight_number  = full_path.split('number=')[1]
-    except:
-        print()
-
-    flights = fr.get_flights(airline_id)
     html = ''
     if airline_id!='':
         try:
@@ -65,7 +56,7 @@ def get_html():
             html +='''<!DOCTYPE html>
     <html><body style="background-image:url('''+image+''');background-size: cover;">'''
     
-            html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action="http://moe.stuy.edu/~jkirmayer30:5000">
+            html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action=""http://moe.stuy.edu/~jkirmayer30:5000"">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
   <label for="number">Flight Number:</label><br>
@@ -97,7 +88,7 @@ def get_html():
         except:
             html ='''<!DOCTYPE html>
             <html>'''
-            html+='''<form action="http://moe.stuy.edu/~jkirmayer30:5000">
+            html+='''<form action="http://127.0.0.1:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline"><br>
   <label for="number">Flight Number:</label><br>
@@ -112,7 +103,7 @@ def get_html():
     
         html+='''
         <div style="background-color:#CCC;width:500px;padding:20px;border-radius:10px">
-        <form action="http://moe.stuy.edu/~jkirmayer30:5000">
+        <form action="http://127.0.0.1:5000">
   <label for="airline">Airline ID:</label><br>
   <input type="text" id="airline" name="airline" value='''+airline_id+'''><br>
   <label for="number">Flight Number:</label><br>
@@ -125,5 +116,5 @@ def get_html():
     
     return html
   
-if __name__ == '__main__':
-   app.run(port=5000,host='http://moe.stuy.edu/~jkirmayer30')
+print("Content-type: text/html\n")
+print(get_html(airline,number))
