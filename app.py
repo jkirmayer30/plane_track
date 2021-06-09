@@ -24,7 +24,6 @@ def get_html(airline_id,flight_number):
                     time = gmt_eta+14400+flight['airport']['destination']['timezone']['offset']
                     icon = flight['status']['icon']
                     delay  = (flight['time']['estimated']['arrival']-flight['time']['scheduled']['arrival'])//60
-                    print(delay)
                     if delay<10:
                         status = 'On Time'
                         if delay<-10:
@@ -53,7 +52,7 @@ def get_html(airline_id,flight_number):
                     if plane['registration']==flight[9]:
                         break
             html +='''<!DOCTYPE html>
-    <html><body style="background-size: cover;">'''
+    <html><body style="background-image:url('''+image+''');background-size: cover;">'''
     
             html+='''<div style="background-color:white;width:500px;padding:20px;border-radius:10px"><form action="http://moe.stuy.edu/~jkirmayer30/app.py">
   <label for="airline">Airline ID:</label><br>
@@ -101,7 +100,6 @@ def get_html(airline_id,flight_number):
         flight_number=''
         html +='''<!DOCTYPE html>
     <html><body>'''
-        print(html)
         html+='''<div style="background-color:#CCC;width:500px;padding:20px;border-radius:10px">
         <form action="http://moe.stuy.edu/~jkirmayer30/app.py/">
   <label for="airline">Airline ID:</label><br>
